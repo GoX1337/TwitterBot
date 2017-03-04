@@ -1,0 +1,23 @@
+{
+  "name": "bot",
+  "version": "1.0.0",
+  "description": "twitter bot to win giveaway",
+  "main": "bot.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GoX1337/TwitterBot.git"
+  },
+  "author": "gox1337",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/GoX1337/TwitterBot/issues"
+  },
+  "homepage": "https://github.com/GoX1337/TwitterBot#readme",
+  "dependencies": {
+    "dotenv": "^4.0.0",
+    "twitter": "^1.7.0"
+  }
+}
