@@ -38,14 +38,20 @@ function followAllRetardsInTweet(tweet){
 	var isOK = true;
 
 	user_mentions.forEach(function(entry) {
-		if(addUserInList(entry.id, users)){
+
+		if(addUserInList(entry, users)){
+			//console.log("addUserInList " + entry.id + " " + JSON.stringify(users));
 			var err = followUser(entry.id);
 			entry['isFollowedOK'] = !err;
-			if(err && isOK)
-				isOK = false;
 			users.push(entry);
+
+			if(err)
+				isOK = false;
+		} else {
+			console.log(entry.id + " Already in list");
 		}
 	});
+
 	var res = {
 		'isOK': isOK,
 		'users': users
@@ -54,25 +60,29 @@ function followAllRetardsInTweet(tweet){
 	return res;
 };
 
-function addUserInList(userId,  userList){
-	userList.forEach(function(entry) {
-		if(entry == userId)
-			return false;
-	});
+function addUserInList(user,  userList){
+	if(userList && userList.length > 0){
+		userList.forEach(function(entry) {
+			if(entry.id == user.id){
+				return false;
+			}
+		});
+	}
 	return true;
 };
 
-function followUser(user){
+function followUser(userId){
 
 	// request object to follow
 	var followParam = {
-		user_id: user,
+		user_id: userId,
 		follow: true
 	}
 
 	twitter.post('friendships/create', followParam, function (err, resp) {
 		stats.nbFollowsTentative++;
 		if (err) {
+			console.log(JSON.stringify(err));
 			return err;
 		} 
 		stats.nbFollowsSuccess++;
@@ -81,14 +91,14 @@ function followUser(user){
 };
 
 function printTweet(tweet, errorRT, resultFollow){
-	var msg = "Id:" + tweet.id_str + ", RT:" + (errorRT ? "Fail" : "Success") + ", Follow:" + printFollowStatus(resultFollow) + ", Date:" + tweet.created_at + ", Text:" + tweet.text;
+	var msg = "Id:" + tweet.id_str + ", RT:" + (errorRT ? "Fail" : "Success") + ", Follow:" + printFollowStatus(resultFollow) + ", Date:" + tweet.created_at + ", Text:" + tweet.text + "\n";
 	
 	if(!errorRT && resultFollow.isOK){
 		log.payloadSuccess(tweet);
 		log.info(msg);
 	} else {
 		log.payloadFail(tweet);
-		log.info(error);
+		log.error(msg);
 	}
 };
 
@@ -103,7 +113,7 @@ function printFollowStatus(resultFollow){
 
 function bullshitRetweeter(){
 	//TODO
-}
+};
 
 twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' },
     function(stream) {
@@ -117,11 +127,15 @@ twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' },
         		return;
         	}
 
+        	stats.nbGivewayTentative++;
+
         	// RT the giveaway tweet
 			var errorRT = retweetThisFucktardShit(tweet);
+			//console.log("after retweetThisFucktardShit");
 
 			// Follow all users mentionned in the giveaway tweet
 			var resultFollow = followAllRetardsInTweet(tweet);
+			//console.log("after followAllRetardsInTweet");
 
 			// Log all information about the current tweet
 			printTweet(tweet, errorRT, resultFollow);
