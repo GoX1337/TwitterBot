@@ -1,19 +1,9 @@
 
 var Twitter = require('twitter');
 var env = require('dotenv').load();
+var async = require('async');
 var log = require('./log.js');
 
-var stats = {
-	nbTweetsProcess: 0,
-	nbTweetsIgnored: 0,
-	nbGivewayEnterSuccess: 0,
-	nbGivewayTentative: 0,
-    nbRetweetsSuccess: 0,
-    nbRetweetsTentative: 0,
-    nbFollowsSuccess: 0,
-    nbFollowsTentative: 0
-};
-  
 var twitter = new Twitter({
 	consumer_key: process.env.consumer_key,
 	consumer_secret: process.env.consumer_secret,
@@ -21,18 +11,20 @@ var twitter = new Twitter({
 	access_token_secret: process.env.access_token_secret
 });
 
+var maxQuerySize = 500;
+
+var trendsFR = [];
+
 function retweetThisFucktardShit(tweet){
-	stats.nbRetweetsTentative++;
 	twitter.post('statuses/retweet/' + tweet.id_str, function(err, tweet, response) {
 		if(!err){
-			stats.nbRetweetsSuccess++;
 			return null;
 		}
 		return err;
    });
 };
 
-function followAllRetardsInTweet(tweet){
+function followAllRetardsInTweet(tweet, callback){
 	var user_mentions = tweet.entities.user_mentions;
 	var users = [];
 	var isOK = true;
@@ -40,7 +32,6 @@ function followAllRetardsInTweet(tweet){
 	user_mentions.forEach(function(entry) {
 
 		if(addUserInList(entry, users)){
-			//console.log("addUserInList " + entry.id + " " + JSON.stringify(users));
 			var err = followUser(entry.id);
 			entry['isFollowedOK'] = !err;
 			users.push(entry);
@@ -56,8 +47,8 @@ function followAllRetardsInTweet(tweet){
 		'isOK': isOK,
 		'users': users
 	};
-
-	return res;
+	console.log('res follow');
+	callback(null);
 };
 
 function addUserInList(user,  userList){
@@ -80,12 +71,11 @@ function followUser(userId){
 	}
 
 	twitter.post('friendships/create', followParam, function (err, resp) {
-		stats.nbFollowsTentative++;
 		if (err) {
-			console.log(JSON.stringify(err));
+			console.log(followParam.user_id + " " + JSON.stringify(err));
 			return err;
 		} 
-		stats.nbFollowsSuccess++;
+		console.log('followUser ' + userId);
 		return null;
 	});
 };
@@ -111,47 +101,135 @@ function printFollowStatus(resultFollow){
 	return followStatus + "]";
 };
 
-function bullshitRetweeter(){
-	//TODO
+function bullshitRetweeter(nbRandomTweets){
+	var query = trendsFR[Math.floor(Math.random() * 5)];
+	var params = {
+		q: query,
+		count: nbRandomTweets
+	};
+
+	twitter.get('search/tweets', params, function(error, tweets, response) {
+		if(error){
+			log.error("Problem with bullshitRetweeter !");
+		} else {
+			var trendsTweets = [];
+			async.forEachOf(tweets.statuses, function (value, key, callback) {
+				if(!value.retweeted){
+					retweetThisFucktardShit(value);
+					trendsTweets.push(value.id);
+				}
+				callback();
+			}, function (err) {
+			  if (err) 
+			  	console.error(err.message);
+			  log.info(trendsTweets.length + " tweets about " + query + " RT " + trendsTweets);
+			})
+		}
+	});
 };
 
-twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' },
-    function(stream) {
- 
-        stream.on('data', function( tweet ) {
-        	stats.nbTweetsProcess++;
+function getTrendsForWoeid(woeid, callback){
+	var param = {
+		id: woeid, 
+		exclude: false
+	};
 
-        	// already RT or response tweet : we ignore it
-        	if(tweet.retweeted || tweet.in_reply_to_status_id){
-        		stats.nbTweetsIgnored++;
-        		return;
-        	}
+	twitter.get('trends/place', param, function (err, data, response) {
+		if(err){
+			log.error("Problem GET frends/place:" + JSON.stringify(err));
+		} else {
+			if(data && data.length > 0){
+				data.forEach(function(entry) {
+					entry.trends.forEach(function(trd) {
+						trendsFR.push(trd.name);
+					});
+				});
+				trendsFR = Array.from(new Set(trendsFR));
+				callback(null);
+			} else {
+				log.info("No trends founds");
+			}
+		}
+	});
+};
 
-        	stats.nbGivewayTentative++;
+function getTrends(country, callback){
+	twitter.get('trends/available', {}, function (err, data, response) {
+		if(err){
+			log.error("Problem GET frends/available:" + JSON.stringify(err));
+		} else {
+			data.forEach(function(entry) {
+				if(entry.name.toUpperCase() == country.toUpperCase()){
+					getTrendsForWoeid(entry.woeid, callback);
+				}
+			});
+		}
+	});
+};
 
-        	// RT the giveaway tweet
-			var errorRT = retweetThisFucktardShit(tweet);
-			//console.log("after retweetThisFucktardShit");
+function startTrackGivewayTweets(){
+	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' },
+	    function(stream) {
+	 
+	        stream.on('data', function( tweet ) {
 
-			// Follow all users mentionned in the giveaway tweet
-			var resultFollow = followAllRetardsInTweet(tweet);
-			//console.log("after followAllRetardsInTweet");
+	        	// already RT or response tweet : we ignore it
+	        	if(tweet.retweeted || tweet.in_reply_to_status_id){
+	        		stats.nbTweetsIgnored++;
+	        		return;
+	        	}
 
-			// Log all information about the current tweet
-			printTweet(tweet, errorRT, resultFollow);
+	        	async.series([
+				    function(callback){
+				       // RT the giveaway tweet
+				       console.log("RT");
+					   var errorRT = retweetThisFucktardShit(tweet);
+					   callback(errorRT, 'rt');
+				    },
+				    function(callback){
+				       // Follow all users mentionned in the giveaway tweet
+				       console.log("Follows");
+					   followAllRetardsInTweet(tweet, callback);
+					   callback(errorRT, 'follow');
+					   console.log("after follows");
+				    },
+				    function(callback){
+				    	console.log("printTweet");
+				       // Log all information about the current tweet
+						printTweet(tweet, errorRT, resultFollow);
+				    },
+				    function(callback){
+				    	console.log("log.stats");
+						// Log all stats counters of the bot
+						log.stats(stats);
+				    }
+				],
+				// optional callback
+				function(err, results){
+				    // results is now equal to ['one', 'two']
+				    console.log("result");
+				});
+	        });
+	 
+	        stream.on('error', function ( error ) {
+	            log.error("Problem with stream! ");
+	        });
+	    }
+	);
+};
 
-			// Log all stats counters of the bot
-			log.stats(stats);
-
-			// RT, like or comment random tweets 
-			bullshitRetweeter();
-
-			if(!errorRT && resultFollow.isOK)
-				stats.nbGivewayEnterSuccess++;
-        });
- 
-        stream.on('error', function ( error ) {
-            log.error("Problem with stream!");
-        });
+async.series([
+    function(callback){
+        console.log("getTrends");
+        getTrends('FRANCE', callback);
+    },
+    function(callback){
+        bullshitRetweeter(7);
+        callback(null);
     }
-);
+],
+// optional callback
+function(err, results){
+    // results is now equal to ['one', 'two']
+    //console.log("result");
+});
