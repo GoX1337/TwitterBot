@@ -32,7 +32,7 @@ function getTrendsForWoeid(trendsWoeid, resolve){
 	return new Promise((resolve, reject) => {
 		twitter.get('trends/place', {	id: trendsWoeid[0], exclude: false}, function (err, data, response) {
 			if(err){
-				log.error("Problem GET trends/place:" + JSON.stringify(err));
+				console.log("Problem GET trends/place:" + JSON.stringify(err));
 			} else {
 				if(data && data.length > 0){
 					let trendsFR = [];
@@ -71,7 +71,7 @@ function bullshitRetweeter(nbRandomTweets, trendsFR){
 					callback();
 				}, function (err) {
 					if (err)
-					console.error(err.message);
+						console.error(err.message);
 					console.log(trendsTweets.length + " tweets about " + query + " RT " + trendsTweets);
 				})
 			}
@@ -94,22 +94,22 @@ function retweetThisFucktardShit(tweet){
 // Follow every users mentionned in given tweet
 function followAllRetardsInTweet(tweet, callback){
 	return new Promise((resolve, reject) => {
-			var user_mentions = tweet.entities.user_mentions;
-			var users = [];
-			var promiseFollows = [];
+		var user_mentions = tweet.entities.user_mentions;
+		var users = [];
+		var promiseFollows = [];
 
-			user_mentions.forEach(function(entry) {
-				if(addUserInList(entry, users)){
-					promiseFollows.push(followUser(entry.id));
-					users.push(entry);
-				}
-			});
+		user_mentions.forEach(function(entry) {
+			if(addUserInList(entry, users)){
+				promiseFollows.push(followUser(entry.id));
+				users.push(entry);
+			}
+		});
 
-			Promise.all(promiseFollows).then((data) => {
-				console.log("Success follow users :" + JSON.stringify(users));
-			}, (err) => {
-				console.log(`Error: ${err}`);
-			})
+		Promise.all(promiseFollows).then((data) => {
+			console.log("Success follow users :" + JSON.stringify(users));
+		}, (err) => {
+			console.log(`Error: ${err}`);
+		})
 	 })
 };
 
