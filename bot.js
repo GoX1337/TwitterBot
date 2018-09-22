@@ -11,8 +11,10 @@ let twitter = new Twitter({
 });
 
 let nbProcessedTweet = 0;
-let maxTweets = 25;
-let apiCall = false;
+let maxTweets = 5;
+let pauseConcours = 5 * 60 * 1000;
+let apiCall = true;
+let concoursStream = null;
 
 logger.info("Starting twitter bot...");
 
@@ -86,7 +88,15 @@ let printTweetUrl = (tweet) => {
 }
 
 let processTweet = (tweet) => {
-	if(nbProcessedTweet == maxTweets) process.exit(1);
+
+	if(nbProcessedTweet == maxTweets){
+		concoursStream.destroy();
+		logger.info("5 seconds stream pause.")
+		setTimeout(()=>{
+			startConcoursStream();
+		}, pauseConcours);
+	}
+
 	payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
 	let msg = printTweetUrl(tweet);
 
@@ -119,7 +129,13 @@ let processTweet = (tweet) => {
 	nbProcessedTweet++;
 }
 
-twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
-	stream.on('data', processTweet);
-	stream.on('error', errorTweet);
-});
+let startConcoursStream = () => {
+	logger.info("Start concours stream...");
+	
+	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
+		concoursStream = stream;
+		stream.on('data', processTweet);
+		stream.on('error', errorTweet);
+	});
+}
+startConcoursStream();
