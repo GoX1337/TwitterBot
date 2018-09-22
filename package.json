@@ -18,6 +18,7 @@
   "homepage": "https://github.com/GoX1337/TwitterBot#readme",
   "dependencies": {
     "dotenv": "^4.0.0",
-    "twitter": "^1.7.0"
+    "twitter": "^1.7.1",
+    "winston": "^3.1.0"
   }
 }
