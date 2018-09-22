@@ -20,6 +20,7 @@ const logger = createLogger({
                 myFormat
             ),
         }),
+        new transports.File({ filename: 'bot.log', level: 'info', maxsize: '10000000' }),
         new transports.File({ filename: 'error.log', level: 'error', maxsize: '10000000' })
     ]
 });

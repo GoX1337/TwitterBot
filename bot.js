@@ -11,50 +11,10 @@ let twitter = new Twitter({
 });
 
 let nbProcessedTweet = 0;
-let maxTweets = 3;
+let maxTweets = 25;
 let apiCall = false;
 
 logger.info("Starting twitter bot...");
-logger.info("Concours tweets:");
-
-let processTweet = (tweet) => {
-	if(nbProcessedTweet == maxTweets) process.exit(1);
-	payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
-	let msg = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
-	let txt = "";
-
-	if(tweet.retweeted_status && tweet.retweeted_status.extended_tweet && tweet.retweeted_status.extended_tweet.full_text)
-		txt += tweet.retweeted_status.extended_tweet.full_text.toUpperCase();
-
-	let rt = txt.includes("RT");
-	let follow = txt.includes("FOLLOW") || txt.includes("SUIVRE");
-	let rtTweet = tweet.retweeted_status;
-	let quotedTweet = tweet.quoted_status;
-
-	let instructions = getInstructions(rt, follow);
-	let types = getTweetType(rtTweet, quotedTweet);
-
-	if(!txt || !(rt && follow)){
-		logger.warn(msg + " " + instructions + " " + types);
-		return;
-	}
-	if(!tweet.id_str){
-		logger.error("tweet.id_str is undefined");
-		return;
-	}
-
-	if(apiCall && !tweet.retweeted_status.retweeted)
-		retweet(tweet);
-
-	if(apiCall && follow && tweet.entities.user_mentions){
-		tweet.entities.user_mentions.forEach(user => {
-			followUser(tweet, user);
-		});
-	}
-
-	logger.info(msg + " " + instructions + " " + types);
-	nbProcessedTweet++;
-}
 
 let retweet = (tweet) => {
 	twitter.post('statuses/retweet/' + tweet.id_str, (err, tweet, response) => {
@@ -64,24 +24,32 @@ let retweet = (tweet) => {
    });
 }
 
-let getInstructions = (rt, follow) => {
+let getInstructions = (tweet) => {
+	let txt = "";
+	if(tweet.retweeted_status.extended_tweet)
+		txt = tweet.retweeted_status.extended_tweet.full_text.toUpperCase();
+	else 
+		txt = tweet.retweeted_status.text.toUpperCase();
+
+	let rt = txt.includes("RT");
+	let follow = txt.includes("FOLLOW") || txt.includes("SUIVRE");
+	let like = txt.includes("LIKE") || txt.includes("AIME");
 	let inst = "";
 	if(rt) inst += "RT";
 	if(follow){
 		if(inst.length > 0) inst += ", ";
 		inst += "Follow";
 	}
-	return "[" + inst + "]";
-}
-
-let getTweetType = (rtTweet, quotedTweet) => {
-	let types = "";
-	if(rtTweet) types += "TwitRT";
-	if(quotedTweet){
-		if(types.length > 0) types += ", ";
-		types += "TwitQuoted";
+	if(like){
+		if(inst.length > 0) inst += ", ";
+		inst += "Like";
 	}
-	return "[" + types + "]";
+	return {
+		"str": "[" + inst + "]",
+		"rt": rt,
+		"follow": follow,
+		"like": like
+	};
 }
 
 let followUser = (tweet, user) => {
@@ -108,10 +76,47 @@ let getTwitById = (id) => {
 	});
 }
 
-
 let errorTweet = (error) => {
 	logger.error("Problem with stream ! " + JSON.stringify(error));
 	process.exit(1);
+}
+
+let printTweetUrl = (tweet) => {
+	return "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
+}
+
+let processTweet = (tweet) => {
+	if(nbProcessedTweet == maxTweets) process.exit(1);
+	payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
+	let msg = printTweetUrl(tweet);
+
+	let rtTweet = tweet.retweeted_status;
+	if(!rtTweet){
+		logger.warn(msg);
+		return;
+	}
+	if(rtTweet){
+		msg = printTweetUrl(rtTweet);
+	}
+	
+	let instructions = getInstructions(tweet);
+	if(instructions.like || (!instructions.rt && !instructions.follow)){
+		logger.warn(msg);
+		return;
+	}
+
+	if(apiCall && rtTweet && instructions.rt && !rtTweet.retweeted){
+		retweet(tweet);
+	}
+
+	if(apiCall && instructions.follow && tweet.entities.user_mentions){
+		tweet.entities.user_mentions.forEach(user => {
+			followUser(tweet, user);
+		});
+	}
+
+	logger.info(msg + " " + instructions.str);
+	nbProcessedTweet++;
 }
 
 twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
