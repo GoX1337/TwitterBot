@@ -28,9 +28,14 @@ let processTweet = (tweet) => {
 
 	let rt = txt.includes("RT");
 	let follow = txt.includes("FOLLOW") || txt.includes("SUIVRE");
+	let rtTweet = tweet.retweeted_status;
+	let quotedTweet = tweet.quoted_status;
+
+	let instructions = getInstructions(rt, follow);
+	let types = getTweetType(rtTweet, quotedTweet);
 
 	if(!txt || !(rt && follow)){
-		logger.warn(msg + " " + (rt ? "RT" : "") + " " + (follow ? "Follow" : ""));
+		logger.warn(msg + " " + instructions + " " + types);
 		return;
 	}
 	if(!tweet.id_str){
@@ -47,7 +52,7 @@ let processTweet = (tweet) => {
 		});
 	}
 
-	logger.info(msg + " " + (rt ? "RT" : "") + " " + (follow ? "Follow" : ""));
+	logger.info(msg + " " + instructions + " " + types);
 	nbProcessedTweet++;
 }
 
@@ -59,6 +64,26 @@ let retweet = (tweet) => {
    });
 }
 
+let getInstructions = (rt, follow) => {
+	let inst = "";
+	if(rt) inst += "RT";
+	if(follow){
+		if(inst.length > 0) inst += ", ";
+		inst += "Follow";
+	}
+	return "[" + inst + "]";
+}
+
+let getTweetType = (rtTweet, quotedTweet) => {
+	let types = "";
+	if(rtTweet) types += "TwitRT";
+	if(quotedTweet){
+		if(types.length > 0) types += ", ";
+		types += "TwitQuoted";
+	}
+	return "[" + types + "]";
+}
+
 let followUser = (tweet, user) => {
 	twitter.post('friendships/create', {user_id: user.id_str, follow: true}, (err, resp) => {
 		if (err) 
@@ -67,19 +92,29 @@ let followUser = (tweet, user) => {
 	});
 }
 
+let getRates = () => {
+	twitter.get('application/rate_limit_status', (err, resp) => {
+		if (err) 
+			logger.error("application/rate_limit_status " + JSON.stringify(err));
+		logger.info("application/rate_limit_status  " + JSON.stringify(resp));
+	});
+}
+
+let getTwitById = (id) => {
+	twitter.get('statuses/show/' + id, (err, resp) => {
+		if (err) 
+			logger.error("statuses/show/:id " + JSON.stringify(err));
+		logger.info("statuses/show/:id  " + JSON.stringify(resp));
+	});
+}
+
+
 let errorTweet = (error) => {
 	logger.error("Problem with stream ! " + JSON.stringify(error));
 	process.exit(1);
 }
 
-twitter.get('application/rate_limit_status', (err, resp) => {
-	if (err) 
-		logger.error("application/rate_limit_status " + JSON.stringify(err));
-	logger.info("application/rate_limit_status  " + JSON.stringify(resp));
-});
-
-/*twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
+twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
 	stream.on('data', processTweet);
 	stream.on('error', errorTweet);
 });
-*/
