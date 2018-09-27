@@ -1,5 +1,4 @@
 const Twitter = require('twitter');
-const env = require('dotenv').load();
 const logger = require('./logger').logger;
 const payloadLogger = require('./logger').payloadLogger;
 const db = require('./db');
@@ -14,7 +13,6 @@ let twitter = new Twitter({
 
 let queryString = process.argv[2];
 let count = process.argv[3];
-let rates;
 let maxId = -1;
 
 let getRates = () => {
@@ -25,7 +23,6 @@ let getRates = () => {
         var d = new Date(0);
         d.setUTCSeconds(rateSearch.reset);
         logger.info("application/rate_limit_status  " + JSON.stringify(rateSearch) + " " + d);
-        rates = rateSearch;
 
         let t;
         if(rateSearch.remaining > 0){
@@ -58,25 +55,33 @@ let searchTweet = () => {
             logger.error("Failed search/tweet cause: " + JSON.stringify(error));
         } 
         else {
+            let tweetListLen = tweets.statuses.length;
+            let i = 0;
                        
             tweets.statuses.forEach(tweet => {
                 payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
                 let msg = "https://twitter.com/" + tweet.user.screen_name + "/status/" + tweet.id_str;
-                logger.info(msg);
                 if(maxId == -1 || maxId > tweet.id_str){
                     maxId = tweet.id_str;
                 }
-                db.get().collection("tweets").findOne({"tweet_id_str": tweet.id_str}, (err, result) => {
+                let tweetCollection = db.get().collection("tweets");
+
+                tweetCollection.findOne({"id_str": tweet.id_str}, (err, result) => {
                     if(err)
                         logger.error(err);
                     else if(!result){
-                        db.get().collection("tweets").insertOne({"tweet_id_str": tweet.id_str}, (err, result) => {
-                            if (!err) {
-                                logger.info("New tweet inserted in db");
-                            }
+                        tweetCollection.insertOne(tweet, (err, result) => {
+                            if (!err) 
+                                logger.info("Tweet " + tweet.id_str + " inserted in db " + msg);
+                            if(++i == tweetListLen - 1)
+                                getRates();
                         });
+                    } 
+                    else {
+                        logger.warn("Tweet " + tweet.id_str + " already in db " + msg);
+                        if(++i == tweetListLen - 1)
+                            getRates();
                     }
-                    getRates();
                 });
             });
             logger.info(JSON.stringify(tweets.search_metadata));
