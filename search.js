@@ -43,12 +43,11 @@ let searchTweet = () => {
     let params = {
         q: queryString, 
         count: count, 
-        lang: "en"
+        lang: "en",
+        until: "2018-09-20"
     };
     if(maxId != -1)
         params.max_id = maxId;
-
-    logger.info(JSON.stringify(params));
     
     twitter.get('search/tweets', params, (error, tweets, response) => {
         if(error){
@@ -57,6 +56,10 @@ let searchTweet = () => {
         else {
             let tweetListLen = tweets.statuses.length;
             let i = 0;
+            let nbTweetsInserted = 0;
+            let nbTweetsIgnored = 0;
+
+            logger.info(tweetListLen + " tweets found");
                        
             tweets.statuses.forEach(tweet => {
                 payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
@@ -73,14 +76,20 @@ let searchTweet = () => {
                         tweetCollection.insertOne(tweet, (err, result) => {
                             if (!err) 
                                 logger.info("Tweet " + tweet.id_str + " inserted in db " + msg);
-                            if(++i == tweetListLen - 1)
+                            nbTweetsInserted++;
+                            if(++i == tweetListLen - 1){
+                                logger.info(nbTweetsInserted + " tweets inserted; " + nbTweetsIgnored + " tweets ignored");
                                 getRates();
+                            }
                         });
                     } 
                     else {
-                        logger.warn("Tweet " + tweet.id_str + " already in db " + msg);
-                        if(++i == tweetListLen - 1)
+                        logger.debug("Tweet " + tweet.id_str + " already in db " + msg);
+                        nbTweetsIgnored++;
+                        if(++i == tweetListLen - 1){
+                            logger.info(nbTweetsInserted + " tweets inserted; " + nbTweetsIgnored + " tweets ignored");
                             getRates();
+                        }  
                     }
                 });
             });
