@@ -10,11 +10,13 @@ let twitter = new Twitter({
 	access_token_secret: process.env.access_token_secret
 });
 
-let nbProcessedTweet = 0;
-let maxTweets = 5;
-let pauseConcours = 5 * 60 * 1000;
 let apiCall = true;
 let concoursStream = null;
+let nbProcessedTweet = 0;
+let maxTweets = 5;
+
+let pauseConcours = 5 * 60 * 1000;
+let concoursMaxDuration = 30 * 60 * 1000;
 
 logger.info("Starting twitter bot...");
 
@@ -32,7 +34,6 @@ let getInstructions = (tweet) => {
 		txt = tweet.retweeted_status.extended_tweet.full_text.toUpperCase();
 	else 
 		txt = tweet.retweeted_status.text.toUpperCase();
-
 	let rt = txt.includes("RT");
 	let follow = txt.includes("FOLLOW") || txt.includes("SUIVRE");
 	let like = txt.includes("LIKE") || txt.includes("AIME");
@@ -110,7 +111,7 @@ let processTweet = (tweet) => {
 	}
 	
 	let instructions = getInstructions(tweet);
-	if(instructions.like || (!instructions.rt && !instructions.follow)){
+	if(!instructions.rt && !instructions.follow){
 		logger.warn(msg);
 		return;
 	}
@@ -131,9 +132,16 @@ let processTweet = (tweet) => {
 
 let startConcoursStream = () => {
 	logger.info("Start concours stream...");
-	
+
 	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
 		concoursStream = stream;
+
+		setTimeout(()=>{
+			logger.info("Bot stopped after " + concoursMaxDuration + "ms");
+			concoursStream.destroy();
+			process.exit(1);
+		}, concoursMaxDuration);
+
 		stream.on('data', processTweet);
 		stream.on('error', errorTweet);
 	});

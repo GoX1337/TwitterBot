@@ -5,7 +5,7 @@ const myFormat = printf(info => {
     return `${info.timestamp} ${info.level}: ${info.message}`;
 });
 
-const logger = createLogger({
+exports.logger = createLogger({
     level: "info",
     format: format.combine(
         format.timestamp({
@@ -25,7 +25,7 @@ const logger = createLogger({
     ]
 });
 
-const payloadLogger = createLogger({
+exports.payloadLogger = createLogger({
     level: "info",
     format: format.combine(
         format.timestamp({
@@ -37,8 +37,3 @@ const payloadLogger = createLogger({
         new transports.File({ filename: 'payload.log', level: 'info', maxsize: '10000000' })
     ]
 });
-
-module.exports = { 
-    "logger": logger, 
-    "payloadLogger": payloadLogger 
-};
