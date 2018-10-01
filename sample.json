@@ -1,312 +1,376 @@
 {
-    "created_at": "Mon Sep 17 21:16:30 +0000 2018",
-    "id": 1041798069220720600,
-    "id_str": "1041798069220720645",
-    "text": "RT @_LeDoc: ⚠️ ALERTE CONCOURS  ⚠️\nTenter de remporté cette plaque WWE 2K18 !\nPour cela c'est très simple, il suffit de #RT &amp; #Follow @_LeD…",
-    "source": "<a href=\"http://example.com\" rel=\"nofollow\">QuiSeraPresidentDev</a>",
+    "_id": "5bb289bba09f1a0dd066ac58",
+    "created_at": "Fri Sep 28 04:06:58 +0000 2018",
+    "id": 1045525246990864400,
+    "id_str": "1045525246990864385",
+    "full_text": "RT @ThisDayInMETAL: Sept 26th 1995 @sixfeetofficial released their debut album \"Haunted\" #StillAlive #TheEnemyInside #HumanTarget #Lycanthr…",
     "truncated": false,
+    "display_text_range": [
+        0,
+        140
+    ],
+    "entities": {
+        "hashtags": [
+            {
+                "text": "StillAlive",
+                "indices": [
+                    89,
+                    100
+                ]
+            },
+            {
+                "text": "TheEnemyInside",
+                "indices": [
+                    101,
+                    116
+                ]
+            },
+            {
+                "text": "HumanTarget",
+                "indices": [
+                    117,
+                    129
+                ]
+            }
+        ],
+        "symbols": [],
+        "user_mentions": [
+            {
+                "screen_name": "ThisDayInMETAL",
+                "name": "🤘🏻THIS DAY IN METAL🤘🏻",
+                "id": 743472216,
+                "id_str": "743472216",
+                "indices": [
+                    3,
+                    18
+                ]
+            },
+            {
+                "screen_name": "sixfeetofficial",
+                "name": "Chris Barnes",
+                "id": 254234483,
+                "id_str": "254234483",
+                "indices": [
+                    35,
+                    51
+                ]
+            }
+        ],
+        "urls": []
+    },
+    "metadata": {
+        "iso_language_code": "en",
+        "result_type": "recent"
+    },
+    "source": "<a href=\"http://twitter.com/download/iphone\" rel=\"nofollow\">Twitter for iPhone</a>",
     "in_reply_to_status_id": null,
     "in_reply_to_status_id_str": null,
     "in_reply_to_user_id": null,
     "in_reply_to_user_id_str": null,
     "in_reply_to_screen_name": null,
     "user": {
-        "id": 848614492422451200,
-        "id_str": "848614492422451201",
-        "name": "QuiSeraPresidentDev",
-        "screen_name": "quipresidentdev",
-        "location": null,
-        "url": null,
-        "description": null,
-        "translator_type": "none",
+        "id": 16120312,
+        "id_str": "16120312",
+        "name": "Brian Slagel",
+        "screen_name": "brianslagel",
+        "location": "Vegas/NYC/Everywhere",
+        "description": "CEO at @metalblade, hockey fan, metalhead, @metalmisconduct, author of For The Sake Of Heaviness, The History Of Metal Blade Records out now!",
+        "url": "https://t.co/dTbjFTOhuE",
+        "entities": {
+            "url": {
+                "urls": [
+                    {
+                        "url": "https://t.co/dTbjFTOhuE",
+                        "expanded_url": "http://smarturl.it/mbrbook",
+                        "display_url": "smarturl.it/mbrbook",
+                        "indices": [
+                            0,
+                            23
+                        ]
+                    }
+                ]
+            },
+            "description": {
+                "urls": []
+            }
+        },
         "protected": false,
-        "verified": false,
-        "followers_count": 84,
-        "friends_count": 2150,
-        "listed_count": 0,
-        "favourites_count": 174,
-        "statuses_count": 2863,
-        "created_at": "Sun Apr 02 19: 13: 56 +0000 2017",
+        "followers_count": 74349,
+        "friends_count": 4537,
+        "listed_count": 499,
+        "created_at": "Wed Sep 03 21:52:32 +0000 2008",
+        "favourites_count": 13733,
         "utc_offset": null,
         "time_zone": null,
-        "geo_enabled": false,
-        "lang": "fr",
+        "geo_enabled": true,
+        "verified": true,
+        "statuses_count": 24737,
+        "lang": "en",
         "contributors_enabled": false,
         "is_translator": false,
-        "profile_background_color": "F5F8FA",
-        "profile_background_image_url": "",
-        "profile_background_image_url_https": "",
-        "profile_background_tile": false,
-        "profile_link_color": "1DA1F2",
-        "profile_sidebar_border_color": "C0DEED",
-        "profile_sidebar_fill_color": "DDEEF6",
-        "profile_text_color": "333333",
+        "is_translation_enabled": false,
+        "profile_background_color": "1B1A1F",
+        "profile_background_image_url": "http://abs.twimg.com/images/themes/theme9/bg.gif",
+        "profile_background_image_url_https": "https://abs.twimg.com/images/themes/theme9/bg.gif",
+        "profile_background_tile": true,
+        "profile_image_url": "http://pbs.twimg.com/profile_images/980148986588770304/DIMiZfUg_normal.jpg",
+        "profile_image_url_https": "https://pbs.twimg.com/profile_images/980148986588770304/DIMiZfUg_normal.jpg",
+        "profile_banner_url": "https://pbs.twimg.com/profile_banners/16120312/1522520814",
+        "profile_link_color": "EB2F2F",
+        "profile_sidebar_border_color": "000000",
+        "profile_sidebar_fill_color": "252429",
+        "profile_text_color": "666666",
         "profile_use_background_image": true,
-        "profile_image_url": "http: //pbs.twimg.com/profile_images/848615275373187073/mY4rm5B5_normal.jpg",
-        "profile_image_url_https": "https://pbs.twimg.com/profile_images/848615275373187073/mY4rm5B5_normal.jpg",
-        "default_profile": true,
+        "has_extended_profile": false,
+        "default_profile": false,
         "default_profile_image": false,
-        "following": null,
-        "follow_request_sent": null,
-        "notifications": null
+        "following": false,
+        "follow_request_sent": false,
+        "notifications": false,
+        "translator_type": "none"
     },
     "geo": null,
     "coordinates": null,
     "place": null,
     "contributors": null,
     "retweeted_status": {
-        "created_at": "Mon Sep 17 10:54:32 +0000 2018",
-        "id": 1041641546716725200,
-        "id_str": "1041641546716725248",
-        "text": "⚠️ ALERTE CONCOURS  ⚠️\nTenter de remporté cette plaque WWE 2K18 !\nPour cela c'est très simple, il suffit de #RT &amp;… https://t.co/5cru6qEmwy",
+        "created_at": "Wed Sep 26 15:52:33 +0000 2018",
+        "id": 1044978038725783600,
+        "id_str": "1044978038725783553",
+        "full_text": "Sept 26th 1995 @sixfeetofficial released their debut album \"Haunted\" #StillAlive #TheEnemyInside #HumanTarget #Lycanthropy #DeathMetal \n\nDid you know...\nThe album was produced by Brian Slagel.\nSome consider this the band’s best album.\nWhat do you think? https://t.co/aMWE15nA8X",
+        "truncated": false,
         "display_text_range": [
             0,
-            140
+            253
         ],
-        "source": "<a href=\"http://twitter.com\" rel=\"nofollow\">Twitter Web Client</a>",
-        "truncated": true,
+        "entities": {
+            "hashtags": [
+                {
+                    "text": "StillAlive",
+                    "indices": [
+                        69,
+                        80
+                    ]
+                },
+                {
+                    "text": "TheEnemyInside",
+                    "indices": [
+                        81,
+                        96
+                    ]
+                },
+                {
+                    "text": "HumanTarget",
+                    "indices": [
+                        97,
+                        109
+                    ]
+                },
+                {
+                    "text": "Lycanthropy",
+                    "indices": [
+                        110,
+                        122
+                    ]
+                },
+                {
+                    "text": "DeathMetal",
+                    "indices": [
+                        123,
+                        134
+                    ]
+                }
+            ],
+            "symbols": [],
+            "user_mentions": [
+                {
+                    "screen_name": "sixfeetofficial",
+                    "name": "Chris Barnes",
+                    "id": 254234483,
+                    "id_str": "254234483",
+                    "indices": [
+                        15,
+                        31
+                    ]
+                }
+            ],
+            "urls": [],
+            "media": [
+                {
+                    "id": 1044978023399911400,
+                    "id_str": "1044978023399911430",
+                    "indices": [
+                        254,
+                        277
+                    ],
+                    "media_url": "http://pbs.twimg.com/media/DoCB-crXcAY9Czh.jpg",
+                    "media_url_https": "https://pbs.twimg.com/media/DoCB-crXcAY9Czh.jpg",
+                    "url": "https://t.co/aMWE15nA8X",
+                    "display_url": "pic.twitter.com/aMWE15nA8X",
+                    "expanded_url": "https://twitter.com/ThisDayInMETAL/status/1044978038725783553/photo/1",
+                    "type": "photo",
+                    "sizes": {
+                        "thumb": {
+                            "w": 150,
+                            "h": 150,
+                            "resize": "crop"
+                        },
+                        "small": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        },
+                        "medium": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        },
+                        "large": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        }
+                    }
+                }
+            ]
+        },
+        "extended_entities": {
+            "media": [
+                {
+                    "id": 1044978023399911400,
+                    "id_str": "1044978023399911430",
+                    "indices": [
+                        254,
+                        277
+                    ],
+                    "media_url": "http://pbs.twimg.com/media/DoCB-crXcAY9Czh.jpg",
+                    "media_url_https": "https://pbs.twimg.com/media/DoCB-crXcAY9Czh.jpg",
+                    "url": "https://t.co/aMWE15nA8X",
+                    "display_url": "pic.twitter.com/aMWE15nA8X",
+                    "expanded_url": "https://twitter.com/ThisDayInMETAL/status/1044978038725783553/photo/1",
+                    "type": "photo",
+                    "sizes": {
+                        "thumb": {
+                            "w": 150,
+                            "h": 150,
+                            "resize": "crop"
+                        },
+                        "small": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        },
+                        "medium": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        },
+                        "large": {
+                            "w": 500,
+                            "h": 500,
+                            "resize": "fit"
+                        }
+                    }
+                }
+            ]
+        },
+        "metadata": {
+            "iso_language_code": "en",
+            "result_type": "recent"
+        },
+        "source": "<a href=\"http://twitter.com/download/iphone\" rel=\"nofollow\">Twitter for iPhone</a>",
         "in_reply_to_status_id": null,
         "in_reply_to_status_id_str": null,
         "in_reply_to_user_id": null,
         "in_reply_to_user_id_str": null,
         "in_reply_to_screen_name": null,
         "user": {
-            "id": 869320510714327000,
-            "id_str": "869320510714327040",
-            "name": "Le Doc",
-            "screen_name": "_LeDoc",
-            "location": "France",
-            "url": "http://youtube.com/ledocsuryt",
-            "description": "Youtubeur | La chaine 100% #SuperCard",
-            "translator_type": "none",
+            "id": 743472216,
+            "id_str": "743472216",
+            "name": "🤘🏻THIS DAY IN METAL🤘🏻",
+            "screen_name": "ThisDayInMETAL",
+            "location": "Toronto",
+            "description": "What happened on this day in #ROCK #CLASSICROCK #GLAMMETAL #HEAVYMETAL #THRASH history! #TDIM https://t.co/suSQbjqscj",
+            "url": "https://t.co/YQcMWfw84N",
+            "entities": {
+                "url": {
+                    "urls": [
+                        {
+                            "url": "https://t.co/YQcMWfw84N",
+                            "expanded_url": "http://www.thisdayinheavymetal.com",
+                            "display_url": "thisdayinheavymetal.com",
+                            "indices": [
+                                0,
+                                23
+                            ]
+                        }
+                    ]
+                },
+                "description": {
+                    "urls": [
+                        {
+                            "url": "https://t.co/suSQbjqscj",
+                            "expanded_url": "https://www.youtube.com/channel/UCKQi01ASUB_ArXuRebod9JA",
+                            "display_url": "youtube.com/channel/UCKQi0…",
+                            "indices": [
+                                94,
+                                117
+                            ]
+                        }
+                    ]
+                }
+            },
             "protected": false,
-            "verified": false,
-            "followers_count": 354,
-            "friends_count": 106,
-            "listed_count": 0,
-            "favourites_count": 8,
-            "statuses_count": 1564,
-            "created_at": "Mon May 29 22:32:15 +0000 2017",
+            "followers_count": 89896,
+            "friends_count": 2725,
+            "listed_count": 700,
+            "created_at": "Tue Aug 07 18:34:51 +0000 2012",
+            "favourites_count": 51403,
             "utc_offset": null,
             "time_zone": null,
-            "geo_enabled": false,
-            "lang": "fr",
+            "geo_enabled": true,
+            "verified": false,
+            "statuses_count": 19445,
+            "lang": "en",
             "contributors_enabled": false,
             "is_translator": false,
-            "profile_background_color": "000000",
+            "is_translation_enabled": false,
+            "profile_background_color": "C0DEED",
             "profile_background_image_url": "http://abs.twimg.com/images/themes/theme1/bg.png",
             "profile_background_image_url_https": "https://abs.twimg.com/images/themes/theme1/bg.png",
             "profile_background_tile": false,
-            "profile_link_color": "E81C4F",
-            "profile_sidebar_border_color": "000000",
-            "profile_sidebar_fill_color": "000000",
-            "profile_text_color": "000000",
-            "profile_use_background_image": false,
-            "profile_image_url": "http://pbs.twimg.com/profile_images/1033002643055108097/i3tID_S5_normal.jpg",
-            "profile_image_url_https": "https://pbs.twimg.com/profile_images/1033002643055108097/i3tID_S5_normal.jpg",
-            "profile_banner_url": "https://pbs.twimg.com/profile_banners/869320510714327040/1536271924",
-            "default_profile": false,
+            "profile_image_url": "http://pbs.twimg.com/profile_images/1010826641394692096/NXb9EIX3_normal.jpg",
+            "profile_image_url_https": "https://pbs.twimg.com/profile_images/1010826641394692096/NXb9EIX3_normal.jpg",
+            "profile_banner_url": "https://pbs.twimg.com/profile_banners/743472216/1471655281",
+            "profile_link_color": "1DA1F2",
+            "profile_sidebar_border_color": "C0DEED",
+            "profile_sidebar_fill_color": "DDEEF6",
+            "profile_text_color": "333333",
+            "profile_use_background_image": true,
+            "has_extended_profile": false,
+            "default_profile": true,
             "default_profile_image": false,
-            "following": null,
-            "follow_request_sent": null,
-            "notifications": null
+            "following": false,
+            "follow_request_sent": false,
+            "notifications": false,
+            "translator_type": "none"
         },
         "geo": null,
         "coordinates": null,
         "place": null,
         "contributors": null,
         "is_quote_status": false,
-        "extended_tweet": {
-            "full_text": "⚠️ ALERTE CONCOURS  ⚠️\nTenter de remporté cette plaque WWE 2K18 !\nPour cela c'est très simple, il suffit de #RT &amp; #Follow @_LeDoc\nLe vainqueur sera tiré au sort le 1 Octobre !\nBonne chance à tous ! https: //t.co/3D2YsrlbYI",
-            "display_text_range": [
-                0,
-                201
-            ],
-            "entities": {
-                "hashtags": [
-                    {
-                        "text": "RT",
-                        "indices": [
-                            108,
-                            111
-                        ]
-                    },
-                    {
-                        "text": "Follow",
-                        "indices": [
-                            118,
-                            125
-                        ]
-                    }
-                ],
-                "urls": [],
-                "user_mentions": [
-                    {
-                        "screen_name": "_LeDoc",
-                        "name": "Le Doc",
-                        "id": 869320510714327000,
-                        "id_str": "869320510714327040",
-                        "indices": [
-                            126,
-                            133
-                        ]
-                    }
-                ],
-                "symbols": [],
-                "media": [
-                    {
-                        "id": 1041641002640056300,
-                        "id_str": "1041641002640056321",
-                        "indices": [
-                            202,
-                            225
-                        ],
-                        "media_url": "http://pbs.twimg.com/media/DnSm-RnXoAE3noR.jpg",
-                        "media_url_https": "https://pbs.twimg.com/media/DnSm-RnXoAE3noR.jpg",
-                        "url": "https://t.co/3D2YsrlbYI",
-                        "display_url": "pic.twitter.com/3D2YsrlbYI",
-                        "expanded_url": "https://twitter.com/_LeDoc/status/1041641546716725248/photo/1",
-                        "type": "photo",
-                        "sizes": {
-                            "thumb": {
-                                "w": 150,
-                                "h": 150,
-                                "resize": "crop"
-                            },
-                            "small": {
-                                "w": 680,
-                                "h": 510,
-                                "resize": "fit"
-                            },
-                            "large": {
-                                "w": 2048,
-                                "h": 1536,
-                                "resize": "fit"
-                            },
-                            "medium": {
-                                "w": 1200,
-                                "h": 900,
-                                "resize": "fit"
-                            }
-                        }
-                    }
-                ]
-            },
-            "extended_entities": {
-                "media": [
-                    {
-                        "id": 1041641002640056300,
-                        "id_str": "1041641002640056321",
-                        "indices": [
-                            202,
-                            225
-                        ],
-                        "media_url": "http://pbs.twimg.com/media/DnSm-RnXoAE3noR.jpg",
-                        "media_url_https": "https://pbs.twimg.com/media/DnSm-RnXoAE3noR.jpg",
-                        "url": "https://t.co/3D2YsrlbYI",
-                        "display_url": "pic.twitter.com/3D2YsrlbYI",
-                        "expanded_url": "https://twitter.com/_LeDoc/status/1041641546716725248/photo/1",
-                        "type": "photo",
-                        "sizes": {
-                            "thumb": {
-                                "w": 150,
-                                "h": 150,
-                                "resize": "crop"
-                            },
-                            "small": {
-                                "w": 680,
-                                "h": 510,
-                                "resize": "fit"
-                            },
-                            "large": {
-                                "w": 2048,
-                                "h": 1536,
-                                "resize": "fit"
-                            },
-                            "medium": {
-                                "w": 1200,
-                                "h": 900,
-                                "resize": "fit"
-                            }
-                        }
-                    }
-                ]
-            }
-        },
-        "quote_count": 1,
-        "reply_count": 4,
-        "retweet_count": 47,
-        "favorite_count": 21,
-        "entities": {
-            "hashtags": [
-                {
-                    "text": "RT",
-                    "indices": [
-                        108,
-                        111
-                    ]
-                }
-            ],
-            "urls": [
-                {
-                    "url": "https://t.co/5cru6qEmwy",
-                    "expanded_url": "https://twitter.com/i/web/status/1041641546716725248",
-                    "display_url": "twitter.com/i/web/status/1…",
-                    "indices": [
-                        119,
-                        142
-                    ]
-                }
-            ],
-            "user_mentions": [],
-            "symbols": []
-        },
+        "retweet_count": 53,
+        "favorite_count": 129,
         "favorited": false,
         "retweeted": false,
         "possibly_sensitive": false,
-        "filter_level": "low",
-        "lang": "fr"
+        "lang": "en"
     },
     "is_quote_status": false,
-    "quote_count": 0,
-    "reply_count": 0,
-    "retweet_count": 0,
+    "retweet_count": 53,
     "favorite_count": 0,
-    "entities": {
-        "hashtags": [
-            {
-                "text": "RT",
-                "indices": [
-                    120,
-                    123
-                ]
-            },
-            {
-                "text": "Follow",
-                "indices": [
-                    130,
-                    137
-                ]
-            }
-        ],
-        "urls": [],
-        "user_mentions": [
-            {
-                "screen_name": "_LeDoc",
-                "name": "Le Doc",
-                "id": 869320510714327000,
-                "id_str": "869320510714327040",
-                "indices": [
-                    3,
-                    10
-                ]
-            }
-        ],
-        "symbols": []
-    },
     "favorited": false,
     "retweeted": false,
-    "filter_level": "low",
-    "lang": "fr",
-    "timestamp_ms": "1537218990031"
+    "lang": "en"
 }

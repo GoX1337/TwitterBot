@@ -44,7 +44,8 @@ let searchTweet = () => {
         q: queryString, 
         count: count, 
         lang: "en",
-        until: "2018-09-20"
+        include_entities: true,
+        tweet_mode: "extended"
     };
     if(maxId != -1)
         params.max_id = maxId;
