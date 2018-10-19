@@ -1,9 +1,10 @@
-let Twitter = require('twitter');
-let env = require('dotenv').load();
-let logger = require('./logger').logger;
-let payloadLogger = require('./logger').payloadLogger;
+const Twitter = require('twitter');
+const logger = require('./logger').logger;
+const payloadLogger = require('./logger').payloadLogger;
+const db = require('./db');
+const config = require('./config');
 
-let twitter = new Twitter({
+const twitter = new Twitter({
 	consumer_key: process.env.consumer_key,
 	consumer_secret: process.env.consumer_secret,
 	access_token_key: process.env.access_token_key,
@@ -13,10 +14,9 @@ let twitter = new Twitter({
 let apiCall = true;
 let concoursStream = null;
 let nbProcessedTweet = 0;
-let maxTweets = 5;
-
+let maxTweets = 2;
 let pauseConcours = 5 * 60 * 1000;
-let concoursMaxDuration = 30 * 60 * 1000;
+let concoursMaxDuration = 15 * 60 * 1000;
 
 logger.info("Starting twitter bot...");
 
@@ -91,9 +91,15 @@ let printTweetUrl = (tweet) => {
 let processTweet = (tweet) => {
 
 	if(nbProcessedTweet == maxTweets){
+		logger.info("Stop stream. Listen stream again after " + pauseConcours/1000/60 + "s");
 		concoursStream.destroy();
-		logger.info("5 seconds stream pause.")
-		setTimeout(()=>{
+
+		postRandomTweet();
+		setTimeout(() => {
+			postRandomTweet();
+		}, 3 * 60 * 1000);
+
+		setTimeout(() => {
 			startConcoursStream();
 		}, pauseConcours);
 	}
@@ -117,7 +123,7 @@ let processTweet = (tweet) => {
 	}
 
 	if(apiCall && rtTweet && instructions.rt && !rtTweet.retweeted){
-		retweet(tweet);
+		retweet(rtTweet);
 	}
 
 	if(apiCall && instructions.follow && tweet.entities.user_mentions){
@@ -130,14 +136,46 @@ let processTweet = (tweet) => {
 	nbProcessedTweet++;
 }
 
+let postTweet = (status) => {
+    twitter.post('statuses/update', { status: status }, (error, tweet, response) => {
+        if (error)
+            logger.error("Random RT: " + JSON.stringify(error));
+        logger.info("Random RT: Tweet " + status + " done.");
+    });
+}
+
+let postRandomTweet = () => {
+    let tweetCollection = db.get().collection("tweets");
+    tweetCollection.aggregate([
+        { $sample: { size: 1 } }
+    ]).toArray((err, docs) => {
+        if(err) 
+            logger.error("Random RT: " + JSON.stringify(err));
+        let tweet = docs[0];
+        payloadLogger.info(JSON.stringify(tweet));
+        let status = tweet.full_text;
+        if(tweet.retweeted_status){
+            status = tweet.retweeted_status.full_text;
+            if(tweet.retweeted_status.entities && tweet.retweeted_status.entities.urls){
+                tweet.retweeted_status.entities.urls.forEach(urlElem => {
+                    if(!status.includes(urlElem.url))
+                        status += urlElem.url;
+                });
+            }
+        }
+        logger.info("Random RT: " + printTweetUrl(tweet) + " " + status);
+        postTweet(status);
+    });
+}
+
 let startConcoursStream = () => {
 	logger.info("Start concours stream...");
 
 	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
 		concoursStream = stream;
 
-		setTimeout(()=>{
-			logger.info("Bot stopped after " + concoursMaxDuration + "ms");
+		setTimeout(() => {
+			logger.info("Bot stopped after " + (concoursMaxDuration / 1000) + "s");
 			concoursStream.destroy();
 			process.exit(1);
 		}, concoursMaxDuration);
@@ -146,4 +184,12 @@ let startConcoursStream = () => {
 		stream.on('error', errorTweet);
 	});
 }
-startConcoursStream();
+
+db.connect(config.dbUrl, config.dbName, (err) => {
+    if(err) {
+        logger.error(err);
+        process.exit(1);
+    } else {
+		startConcoursStream();
+    }
+});
