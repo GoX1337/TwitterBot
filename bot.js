@@ -14,9 +14,9 @@ const twitter = new Twitter({
 let apiCall = true;
 let concoursStream = null;
 let nbProcessedTweet = 0;
-let maxTweets = 2;
+let maxTweets = 5;
 let pauseConcours = 5 * 60 * 1000;
-let concoursMaxDuration = 15 * 60 * 1000;
+let concoursMaxDuration = 60 * 60 * 1000;
 
 logger.info("Starting twitter bot...");
 
@@ -91,13 +91,12 @@ let printTweetUrl = (tweet) => {
 let processTweet = (tweet) => {
 
 	if(nbProcessedTweet == maxTweets){
-		logger.info("Stop stream. Listen stream again after " + pauseConcours/1000/60 + "s");
+		logger.info("Stop stream. Listen stream again after " + pauseConcours/1000/60 + "m");
+		nbProcessedTweet = 0;
 		concoursStream.destroy();
 
 		postRandomTweet();
-		setTimeout(() => {
-			postRandomTweet();
-		}, 3 * 60 * 1000);
+		postRandomTweet();
 
 		setTimeout(() => {
 			startConcoursStream();
@@ -163,12 +162,13 @@ let postRandomTweet = () => {
                 });
             }
         }
-        logger.info("Random RT: " + printTweetUrl(tweet) + " " + status);
+        logger.info("Random RT: " + printTweetUrl(tweet));
         postTweet(status);
     });
 }
 
 let startConcoursStream = () => {
+	logger.info("------------------------------------------------------------------");
 	logger.info("Start concours stream...");
 
 	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
