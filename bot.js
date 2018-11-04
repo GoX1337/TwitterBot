@@ -17,7 +17,7 @@ const twitter = new Twitter({
 let apiCall = true;
 let concoursStream = null;
 let nbProcessedTweet = 0;
-let maxTweets = 5;
+let maxTweets = 2;
 let pauseConcours = 5 * 60 * 1000; //5m
 let concoursMaxDuration = 2 * 60 * 60 * 1000; //2h
 
@@ -107,9 +107,6 @@ let processTweet = (tweet) => {
 		setTimeout(() => {
 			postRandomTweet();
 		}, 2000);
-		setTimeout(() => {
-			postRandomTweet();
-		}, 3000);
 
 		setTimeout(() => {
 			startConcoursStream();
