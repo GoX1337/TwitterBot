@@ -20,8 +20,8 @@ exports.logger = createLogger({
                 myFormat
             ),
         }),
-        new transports.File({ filename: 'bot.log', level: 'info', maxsize: '10000000' }),
-        new transports.File({ filename: 'error.log', level: 'error', maxsize: '10000000' })
+        new transports.File({ filename: 'bot.log', level: 'info', maxsize: '5000' }),
+        new transports.File({ filename: 'error.log', level: 'error', maxsize: '5000' })
     ]
 });
 
@@ -34,6 +34,6 @@ exports.payloadLogger = createLogger({
         myFormat,
     ),
     transports: [
-        new transports.File({ filename: 'payload.log', level: 'info', maxsize: '10000000' })
+        new transports.File({ filename: 'payload.log', level: 'info', maxsize: '5000' })
     ]
 });

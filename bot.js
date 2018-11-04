@@ -15,8 +15,8 @@ let apiCall = true;
 let concoursStream = null;
 let nbProcessedTweet = 0;
 let maxTweets = 5;
-let pauseConcours = 5 * 60 * 1000;
-let concoursMaxDuration = 60 * 60 * 1000;
+let pauseConcours = 5 * 60 * 1000; //5m
+let concoursMaxDuration = 2 * 60 * 60 * 1000; //2h
 
 logger.info("Starting twitter bot...");
 
@@ -96,7 +96,6 @@ let processTweet = (tweet) => {
 		concoursStream.destroy();
 
 		postRandomTweet();
-		postRandomTweet();
 
 		setTimeout(() => {
 			startConcoursStream();
@@ -139,7 +138,7 @@ let postTweet = (status) => {
     twitter.post('statuses/update', { status: status }, (error, tweet, response) => {
         if (error)
             logger.error("Random RT: " + JSON.stringify(error));
-        logger.info("Random RT: Tweet " + status + " done.");
+        logger.info("Random RT: Tweet done.");
     });
 }
 
