@@ -1,10 +1,11 @@
 const Twitter = require('twitter');
-const express = require('express')
-const app = express()
-const port = 3000
-const logger = require('./logger').logger;
-const payloadLogger = require('./logger').payloadLogger;
-const db = require('./db');
+const express = require('express');
+const app = express();
+const port = 3000;
+
+const logger = require('./utils/logger').logger;
+const payloadLogger = require('./utils/logger').payloadLogger;
+const db = require('./utils/db');
 const config = require('./config');
 
 const twitter = new Twitter({
@@ -19,7 +20,7 @@ let concoursStream = null;
 let nbProcessedTweet = 0;
 let maxTweets = 2;
 let pauseConcours = 5 * 60 * 1000; //5m
-let concoursMaxDuration = 2 * 60 * 60 * 1000; //2h
+let concoursMaxDuration = 24 * 60 * 60 * 1000; //24h
 
 logger.info("Starting twitter bot...");
 
@@ -67,22 +68,6 @@ let followUser = (tweet, user) => {
 		if (err)
 			logger.error("Follow " + user.id_str + " failed cause:" + JSON.stringify(err));
 		logger.info("Follow " + user.id_str + " done (" + tweet.id_str + ")");
-	});
-}
-
-let getRates = () => {
-	twitter.get('application/rate_limit_status', (err, resp) => {
-		if (err)
-			logger.error("application/rate_limit_status " + JSON.stringify(err));
-		logger.info("application/rate_limit_status  " + JSON.stringify(resp));
-	});
-}
-
-let getTwitById = (id) => {
-	twitter.get('statuses/show/' + id, (err, resp) => {
-		if (err)
-			logger.error("statuses/show/:id " + JSON.stringify(err));
-		logger.info("statuses/show/:id  " + JSON.stringify(resp));
 	});
 }
 
@@ -254,11 +239,11 @@ app.get('/stats/reset', (req, res) => {
 });
 
 app.listen(port, () => {
-	logger.info(`Bot app listening on port ${port}!`);
+	logger.info(`Bot app listening on port ${port} !`);
 
 	db.connect(config.dbUrl, config.dbName, (err) => {
 		if (err) {
-			logger.error(err);
+			logger.error("Problem to connect to mongodb.");
 			process.exit(1);
 		} else {
 			startConcoursStream();

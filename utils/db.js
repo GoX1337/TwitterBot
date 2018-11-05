@@ -11,7 +11,7 @@ exports.connect = (url, dbname, done) => {
     if (err) return done(err);
     state.db = db.db(dbname);
     done();
-  })
+  });
 }
 
 exports.get = () => {
@@ -24,6 +24,6 @@ exports.close = (done) => {
       state.db = null;
       state.mode = null;
       done(err);
-    })
+    });
   }
 }

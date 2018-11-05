@@ -2,7 +2,7 @@ const Twitter = require('twitter');
 const logger = require('./logger').logger;
 const payloadLogger = require('./logger').payloadLogger;
 const db = require('./db');
-const config = require('./config');
+const config = require('../config');
 
 let twitter = new Twitter({
 	consumer_key: process.env.consumer_key,
