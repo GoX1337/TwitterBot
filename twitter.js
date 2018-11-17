@@ -153,19 +153,24 @@ let printTweetUrl = (tweet) => {
 }
 
 let processTweet = () => {
-    logger.info("Concours tweet");
-    logger.info("Concours tweet");
-    logger.info("Random tweet");
-    logger.info("Random tweet");
+	let interval = (config.concoursInterval * 60 * 1000) / 4;
+	let offset = interval;
+
+	logger.info("Concours tweet");
+	setTimeout(() => logger.info("Concours tweet"), offset);
+	offset += interval;
+	setTimeout(() => logger.info("Random tweet"), offset);
+	offset += interval;
+	setTimeout(() => logger.info("Random tweet"), offset);
 }
 
 let startConcours = () => {
-	logger.info("Start concours (interval:" + config.concoursInterval/1000 + "s)");
+	logger.info("Start concours (interval: " + config.concoursInterval + " min)");
 	config.concours = true;
     if(concoursTimer)
         clearInterval(concoursTimer);
     processTweet();
-    concoursTimer = setInterval(processTweet, config.concoursInterval);
+    concoursTimer = setInterval(processTweet, config.concoursInterval * 60 * 1000);
 }
 
 let stopConcours = () => {
@@ -176,12 +181,14 @@ let stopConcours = () => {
 
 let startConcoursStream = () => {
 	logger.info("Start concours twitter stream");
-	config.stream = true;
-	twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
-		tweetStream = stream;
-		stream.on('data', processStreamTweet);
-		stream.on('error', errorStreamTweet);
-	});
+	if(!config.stream){
+		config.stream = true;
+		twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
+			tweetStream = stream;
+			stream.on('data', processStreamTweet);
+			stream.on('error', errorStreamTweet);
+		});
+	}
 }
 
 let stopConcoursStream = () => {

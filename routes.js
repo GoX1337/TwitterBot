@@ -90,18 +90,71 @@ router.get('/stopConcours', (req, res) => {
 });
 
 router.get('/config', (req, res) => {
-	res.status(200).send(config);
+	res.setHeader('Content-Type', 'application/json');
+	let cfg = config;
+	delete cfg.dbUrl;
+	delete cfg.dbName;
+	res.status(200).send(cfg);
 });
 
 router.post('/config', (req, res) => {
-	let reqConcoursInter = req.body.concoursInterval;
-	if(reqConcoursInter && reqConcoursInter != config.concoursInterval){
-		logger.info("Bot config 'concoursInterval' is updated (from " + config.concoursInterval + "s to " + reqConcoursInter + "s)");
+	let concoursInterval = req.body.concoursInterval;
+	let nbConcoursTweetsPerInterval = req.body.nbConcoursTweetsPerInterval;
+	let nbRandomTweetsPerInterval = req.body.nbRandomTweetsPerInterval;
+	let stream = req.body.stream;
+	let concours = req.body.concours;
+	let msg = [];
+	let configHasChanged = false;
+
+	if(concoursInterval && concoursInterval != config.concoursInterval){
+		msg.push("concoursInterval is updated (from " + config.concoursInterval + "min to " + concoursInterval + "min)");
+		config.concoursInterval = concoursInterval;
+		configHasChanged = true;
+	} 
+	if(nbConcoursTweetsPerInterval && nbConcoursTweetsPerInterval != config.nbConcoursTweetsPerInterval){
+		msg.push("nbConcoursTweetsPerInterval is updated (from " + config.nbConcoursTweetsPerInterval + " to " + nbConcoursTweetsPerInterval + ")");
+		config.nbConcoursTweetsPerInterval = nbConcoursTweetsPerInterval;
+		configHasChanged = true;
+	}
+	if(nbRandomTweetsPerInterval && nbRandomTweetsPerInterval != config.nbRandomTweetsPerInterval){
+		msg.push("nbRandomTweetsPerInterval is updated (from " + config.nbRandomTweetsPerInterval + " to " + nbRandomTweetsPerInterval + ")");
+		config.nbRandomTweetsPerInterval = nbRandomTweetsPerInterval;
+		configHasChanged = true;
+	}
+
+	if(configHasChanged){
+		logger.info("Config has changed:");
+		msg.forEach((m) => {
+			logger.info(m);
+		});
+	}
+
+	if(config.stream != stream){
+		if(stream && !config.stream){
+			twitter.startConcoursStream();
+		} 
+		else if(!stream && config.stream) {
+			twitter.stopConcoursStream();
+		}
+		config.stream = stream;
+	}
+
+	if(config.concours != concours){
+		if(concours && !config.concours){
+			twitter.startConcours();
+		} 
+		else if(!concours && config.concours) {
+			twitter.stopConcours();
+		}
+		config.concours = concours;
+	} 
+	else if(config.concours && config.concours == concours && configHasChanged) {
+		logger.info("Restarting because config has changed.");
 		twitter.stopConcours();
-		config.concoursInterval = reqConcoursInter;
 		twitter.startConcours();
 	}
-	res.status(200).send({msg: "New bot configuration updated"});
+
+	res.status(200).send({msg: "New bot configuration updated."});
 });
 
 module.exports = router;

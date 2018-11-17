@@ -2,7 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
 const app = express();
-const port = 3000;
+const port = 8080;
 
 const logger = require('./utils/logger').logger;
 const db = require('./utils/db');
@@ -23,7 +23,7 @@ app.listen(port, () => {
 			logger.error("Problem to connect to mongodb.");
 			process.exit(1);
 		}
-		twitter.startConcoursStream();
+		//twitter.startConcoursStream();
 		//twitter.startConcours();
 	});
 });
