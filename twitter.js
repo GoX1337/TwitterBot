@@ -13,6 +13,8 @@ const twitter = new Twitter({
 
 let tweetStream;
 let concoursTimer;
+let concoursTimeoutTab = [];
+let apiCall = true;
 
 let retweet = (tweet, cb) => {
 	twitter.post('statuses/retweet/' + tweet.id_str, (err, tweet, response) => {
@@ -28,6 +30,8 @@ let retweet = (tweet, cb) => {
 
 let getInstructions = (tweet) => {
 	let txt = "";
+	if(!tweet.retweeted_status)
+		return;
 	if (tweet.retweeted_status.extended_tweet)
 		txt = tweet.retweeted_status.extended_tweet.full_text.toUpperCase();
 	else
@@ -53,15 +57,86 @@ let getInstructions = (tweet) => {
 	};
 }
 
+let enterConcours = () => {
+	let concoursTweets = db.get().collection("concoursTweets");
+	concoursTweets.findOne({ concoursEnter: null, concoursFailed: null }, (err, tweet) => {
+		if (err) {
+			logger.error("concoursTweets findOne : " + JSON.stringify(err));
+			return;
+		}
+		let idDb = tweet._id;
+		payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
+		let msg = printTweetUrl(tweet);
+
+		let rtTweet = tweet.retweeted_status;
+		if (!rtTweet) {
+			logger.warn(msg);
+			concoursTweets.updateOne({ _id: idDb }, { $set: { concoursFailed: true } }, (err, result) => {
+				if (err) {
+					logger.error("concoursTweets updateOne");
+				} else {
+					enterConcours();
+					return;
+				}
+			});
+			return;
+		}
+		if (rtTweet) {
+			msg = printTweetUrl(rtTweet);
+		}
+
+		let instructions = getInstructions(tweet);
+		if (!instructions || (!instructions.rt && !instructions.follow)) {
+			logger.warn(msg);
+			concoursTweets.updateOne({ _id: idDb }, { $set: { concoursFailed: true } }, (err, result) => {
+				if (err) {
+					logger.error("concoursTweets updateOne");
+				} else {
+					enterConcours();
+					return;
+				}
+			});
+			return;
+		}
+
+		if (apiCall && rtTweet && instructions.rt && !rtTweet.retweeted) {
+			retweet(rtTweet, (err) => {
+				if (err) {
+					concoursTweets.updateOne({ _id: idDb }, { $set: { concoursFailed: true } }, (err, result) => {
+						if (err) {
+							logger.error("concoursTweets updateOne");
+						} else {
+							enterConcours();
+							return;
+						}
+					});
+					return;
+				}
+				concoursTweets.updateOne({ _id: idDb }, { $set: { concoursEnter: true } }, (err, result) => {
+					if (err)
+						logger.error("concoursTweets updateOne");
+					else
+						updateBotStats("concoursRT");
+				});
+				if (apiCall && instructions.follow && tweet.entities.user_mentions) {
+					tweet.entities.user_mentions.forEach(user => {
+						followUser(tweet, user);
+					});
+				}
+				logger.info(msg + " " + instructions.str);
+			});
+		}
+	});
+}
+
 let updateBotStats = (rtType) => {
 	let statsCol = db.get().collection("stats");
-
 	statsCol.findOne({ id: rtType }, (err, result) => {
 		if (err) {
 			logger.error(rtType + " stats update findOne : " + JSON.stringify(err));
 		}
 		else if (!result) {
-			let botStats = { id: rtType, value: 1 };
+			let botStats = { id: rtType, value: 1, date: new Date() };
 			statsCol.insertOne(botStats, (err, result) => {
 				if (err)
 					logger.error(rtType + " stats update insertOne : " + JSON.stringify(err));
@@ -80,12 +155,12 @@ let updateBotStats = (rtType) => {
 	});
 }
 
-let postTweet = (status) => {
+let postTweet = (status, callback) => {
 	twitter.post('statuses/update', { status: status }, (error, tweet, response) => {
 		if (error)
 			logger.error("Random RT: " + JSON.stringify(error));
 		logger.info("Random RT: Tweet done.");
-		updateBotStats("randomRT");
+		callback();
 	});
 }
 
@@ -109,7 +184,9 @@ let postRandomTweet = () => {
 			}
 		}
 		logger.info("Random RT: " + printTweetUrl(tweet));
-		postTweet(status);
+		postTweet(status, () => {
+			updateBotStats("randomRT");
+		});
 	});
 }
 
@@ -129,19 +206,19 @@ let errorStreamTweet = (error) => {
 let processStreamTweet = (tweet) => {
 	let concoursTweets = db.get().collection("concoursTweets");
 	concoursTweets.findOne({ id_str: tweet.id_str }, (err, result) => {
-		if(err){
+		if (err) {
 			logger.error("concoursTweets findOne : " + JSON.stringify(err));
 			return;
 		}
-		if(!result){
+		if (!result) {
 			concoursTweets.insertOne(tweet, (err, result) => {
-				if(err){
+				if (err) {
 					logger.error("concoursTweets insertOne : " + JSON.stringify(err));
 					return;
 				}
 				logger.info(printTweetUrl(tweet) + " inserted in db.");
 			});
-		} 
+		}
 		else {
 			logger.warn(printTweetUrl(tweet) + " already present in db.");
 		}
@@ -153,35 +230,53 @@ let printTweetUrl = (tweet) => {
 }
 
 let processTweet = () => {
-	let interval = (config.concoursInterval * 60 * 1000) / 4;
-	let offset = interval;
+	let nbConcoursTweets = config.nbConcoursTweetsPerInterval;
+	let nbRandomTweets = config.nbRandomTweetsPerInterval;
+	let interval = (config.concoursInterval * 60 * 1000) / (nbConcoursTweets + nbRandomTweets);
+	let offset = 0;
 
-	logger.info("Concours tweet");
-	setTimeout(() => logger.info("Concours tweet"), offset);
-	offset += interval;
-	setTimeout(() => logger.info("Random tweet"), offset);
-	offset += interval;
-	setTimeout(() => logger.info("Random tweet"), offset);
+	for (let i = 0; i < nbConcoursTweets; i++) {
+		let to = setTimeout(() => {
+			logger.info("Concours tweet");
+			enterConcours();
+		}, offset);
+		concoursTimeoutTab.push(to);
+		offset += interval;
+	}
+
+	for (let i = 0; i < nbRandomTweets; i++) {
+		let to = setTimeout(() => {
+			logger.info("Random tweet");
+			postRandomTweet();
+		}, offset);
+		concoursTimeoutTab.push(to);
+		offset += interval;
+	}
 }
 
 let startConcours = () => {
-	logger.info("Start concours (interval: " + config.concoursInterval + " min)");
+	logger.info("Start concours (interval: " + config.concoursInterval + " min, pause " + config.pause + " min)");
 	config.concours = true;
-    if(concoursTimer)
-        clearInterval(concoursTimer);
-    processTweet();
-    concoursTimer = setInterval(processTweet, config.concoursInterval * 60 * 1000);
+	if (concoursTimer)
+		clearInterval(concoursTimer);
+	processTweet();
+	concoursTimer = setInterval(processTweet, (config.concoursInterval * 60 * 1000) + (config.pause * 60 * 1000));
 }
 
 let stopConcours = () => {
 	logger.info("Stop concours");
 	config.concours = false;
-    clearInterval(concoursTimer);
+	clearInterval(concoursTimer);
+	concoursTimeoutTab.forEach((to) => {
+		clearTimeout(to);
+	});
+	concoursTimeoutTab = [];
+	concoursTimer = null;
 }
 
 let startConcoursStream = () => {
 	logger.info("Start concours twitter stream");
-	if(!config.stream){
+	if (!config.stream) {
 		config.stream = true;
 		twitter.stream('statuses/filter', { track: '#CONCOURS, CONCOURS' }, stream => {
 			tweetStream = stream;
@@ -194,15 +289,15 @@ let startConcoursStream = () => {
 let stopConcoursStream = () => {
 	logger.info("Stop concours twitter stream");
 	config.stream = false;
-	if(tweetStream)
-    	tweetStream.destroy();
+	if (tweetStream)
+		tweetStream.destroy();
 }
 
 TwitterModule = {
-    startConcoursStream: startConcoursStream,
-    stopConcoursStream: stopConcoursStream,
-    startConcours: startConcours,
-    stopConcours: stopConcours
+	startConcoursStream: startConcoursStream,
+	stopConcoursStream: stopConcoursStream,
+	startConcours: startConcours,
+	stopConcours: stopConcours
 };
 
 module.exports = TwitterModule;

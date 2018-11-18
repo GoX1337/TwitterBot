@@ -99,6 +99,7 @@ router.get('/config', (req, res) => {
 
 router.post('/config', (req, res) => {
 	let concoursInterval = req.body.concoursInterval;
+	let pause = req.body.pause;
 	let nbConcoursTweetsPerInterval = req.body.nbConcoursTweetsPerInterval;
 	let nbRandomTweetsPerInterval = req.body.nbRandomTweetsPerInterval;
 	let stream = req.body.stream;
@@ -109,6 +110,11 @@ router.post('/config', (req, res) => {
 	if(concoursInterval && concoursInterval != config.concoursInterval){
 		msg.push("concoursInterval is updated (from " + config.concoursInterval + "min to " + concoursInterval + "min)");
 		config.concoursInterval = concoursInterval;
+		configHasChanged = true;
+	}
+	if(pause && pause != config.pause){
+		msg.push("pause is updated (from " + config.pause + "min to " + pause + "min)");
+		config.pause = pause;
 		configHasChanged = true;
 	} 
 	if(nbConcoursTweetsPerInterval && nbConcoursTweetsPerInterval != config.nbConcoursTweetsPerInterval){
