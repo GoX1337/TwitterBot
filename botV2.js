@@ -14,6 +14,11 @@ app.use(bodyParser.json());
 app.use(morgan('dev'));
 app.use('/bot', routes);
 
+app.use(express.static(__dirname + '/view/bot-dashboard/build'));
+app.get('/', function (req, res) {
+    res.sendFile(path.join(__dirname + '/view/bot-dashboard/build/index.html'));
+});
+
 logger.info("Starting twitter bot...");
 
 app.listen(port, () => {
