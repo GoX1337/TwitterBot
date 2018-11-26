@@ -80,8 +80,8 @@ let enterConcours = () => {
 				}
 			});
 			return;
-		}
-		if (rtTweet) {
+		} 
+		else {
 			msg = printTweetUrl(rtTweet);
 		}
 
@@ -125,7 +125,10 @@ let enterConcours = () => {
 				}
 				logger.info(msg + " " + instructions.str);
 			});
-		}
+		} 
+		else {
+			logger.warn("!rt " + msg);
+		} 
 	});
 }
 
