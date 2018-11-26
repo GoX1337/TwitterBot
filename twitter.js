@@ -128,6 +128,14 @@ let enterConcours = () => {
 		} 
 		else {
 			logger.warn("!rt " + msg);
+			concoursTweets.updateOne({ _id: idDb }, { $set: { concoursFailed: true } }, (err, result) => {
+				if (err) {
+					logger.error("concoursTweets updateOne");
+				} else {
+					enterConcours();
+					return;
+				}
+			});
 		} 
 	});
 }
