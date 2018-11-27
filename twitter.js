@@ -64,6 +64,10 @@ let enterConcours = () => {
 			logger.error("concoursTweets findOne : " + JSON.stringify(err));
 			return;
 		}
+		if(!tweet){
+			logger.error("concoursTweets no mode concours tweet available in db");
+			return;
+		}
 		let idDb = tweet._id;
 		payloadLogger.info(tweet.id_str + " " + JSON.stringify(tweet));
 		let msg = printTweetUrl(tweet);
