@@ -19,10 +19,10 @@ let apiCall = true;
 let retweet = (tweet, cb) => {
 	twitter.post('statuses/retweet/' + tweet.id_str, (err, tweet, response) => {
 		if (err) {
-			logger.error("RT " + tweet.id_str + " failed cause:" + JSON.stringify(err));
+			logger.error("RT " + tweet ? tweet.id_str : "" + " failed cause:" + JSON.stringify(err));
 			cb(err);
 		} else {
-			logger.info("RT " + tweet.id_str + " done.");
+			logger.info("RT " + tweet ? tweet.id_str : "" + " done.");
 			cb();
 		}
 	});
